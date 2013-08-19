@@ -20,7 +20,7 @@ $.ajax({
   data:  '{ "text": "this is a awesome test" }'
 });
 
-$.ajax('https://api.parse.com/1/classes/messages', {
+$.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
   contentType: 'application/json',
   cache: false,
   success: function(data){
