@@ -17,7 +17,8 @@ $.ajax({
   type: 'POST',
   contentType: 'application/json',
   url: 'https://api.parse.com/1/classes/messages',
-  data:  '{ "text": "this is a awesome test" }'
+  data:  '{ "text": "this is a awesome test", \
+    "username":"The Master" }'
 });
 
 $.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
@@ -25,7 +26,10 @@ $.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
   cache: false,
   success: function(data){
     for (var i = 0; i < data.results.length; i++) {
-      $('#main').append($("<p></p>").text(data.results[i].text));
+      $tweet = $('<p></p>');
+      $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
+      $tweet.append($("<span class='message'></span>").text(data.results[i].text));
+      $('#main').append($tweet);
     }
     console.log(data);
   },
