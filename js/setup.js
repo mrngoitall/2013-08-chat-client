@@ -11,10 +11,15 @@ $(document).ready(function() {
     success: function(data){
       for (var i = 0; i < data.results.length; i++) {
         $tweet = $('<p></p>');
-        $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
+        $tweet.append($("<span class='user "+data.results[i].username+"'></span>").text(data.results[i].username+": "));
         $tweet.append($("<span class='message'></span>").text(data.results[i].text));
         $('#main').append($tweet);
       }
+      $('.user').on('click', function(){
+        var friend = '<p>' + $(this).text().slice(0,$(this).length - 3) + '</p>';
+        $('#friends').append(friend);
+
+      });
       console.log(data);
     },
     error: function(data) {
@@ -35,4 +40,5 @@ $(document).ready(function() {
     });
   });
 
+//$('.undefined').css({'font-weight':'bold'})
 });
