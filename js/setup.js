@@ -2,7 +2,7 @@ var Messages = function(){
 };
 
 Messages.prototype.refresh = function(options) {
-  $.ajax('https://api.parse.com/1/classes/'+currentRoom+'?order=-createdAt', {
+  $.ajax('https://api.parse.com/1/classes/'+this.currentRoom+'?order=-createdAt', {
     contentType: 'application/json',
     cache: false,
     success: options.success,
@@ -15,32 +15,49 @@ Messages.prototype.refresh = function(options) {
 
 var NewMessageView = function(options) {
   this.messages = options.messages;
-
-  var refresh = $.proxy(this.messages.refresh({
+  //debugger;
+  var that = this;
+  this.messages.refresh({
     success: function(data){
-      $('#messages').html('');
-      for (var i = 0; i < data.results.length; i++) {
-        var $tweet = $('<p class='+data.results[i].username+'></p>');
-        $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
-        $tweet.append($("<span class='message'></span>").text(data.results[i].text));
-        $('#messages').append($tweet);
-      }
-      $('.user').on('click', function(){
-        var friendUsername = $(this).text().slice(0,$(this).length - 3);
-        var friend = '<p>' + friendUsername + '</p>';
-        if(friends[friendUsername] === undefined) {
-          $('#friends').append(friend);
-          $('.'+friendUsername).css({'font-weight':'bold'});
-        }
-        friends[friendUsername] = true;
-      });
-      for(var key in friends){
-        $('.'+key).css({'font-weight':'bold'});
-      }
+      //debugger;
+      that.clearChatMessages();
+      that.appendNewMessages(data);
+      that.addFriendEventListener();
+      that.formatFriendMessages();
     }
-  }),this);
-  refresh();
+  });
 
+};
+
+NewMessageView.prototype.clearChatMessages = function () {
+  $('#messages').html('');
+};
+
+NewMessageView.prototype.appendNewMessages = function (data) {
+  for (var i = 0; i < data.results.length; i++) {
+    var $tweet = $('<p class='+data.results[i].username+'></p>');
+    $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
+    $tweet.append($("<span class='message'></span>").text(data.results[i].text));
+    $('#messages').append($tweet);
+  }
+};
+
+NewMessageView.prototype.addFriendEventListener = function () {
+  $('.user').on('click', function(){
+    var friendUsername = $(this).text().slice(0,$(this).length - 3);
+    var friend = '<p>' + friendUsername + '</p>';
+    if(friends[friendUsername] === undefined) {
+      $('#friends').append(friend);
+      $('.'+friendUsername).css({'font-weight':'bold'});
+    }
+    friends[friendUsername] = true;
+  });
+};
+
+NewMessageView.prototype.formatFriendMessages = function () {
+  for(var key in friends){
+    $('.'+key).css({'font-weight':'bold'});
+  }
 };
 
   $(document).ready(function() {
