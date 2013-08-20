@@ -30,9 +30,7 @@ $(document).ready(function() {
           }
           friends[friendUsername] = true;
         });
-        console.log(data);
         for(var key in friends){
-          console.log(key);
           $('.'+key).css({'font-weight':'bold'});
         }
       },
