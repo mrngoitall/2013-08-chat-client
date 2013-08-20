@@ -13,17 +13,9 @@ Messages.prototype.refresh = function(options) {
 
 };
 
-  $(document).ready(function() {
-  var friends = {};
-  var currentRoom = 'messages';
-  var chatRooms = {'messages': true};
-  // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
-  $.ajaxPrefilter(function(settings, _, jqXHR) {
-    jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
-    jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
-  });
+var NewMessageView = function(options) {
+  var messages = options.messages;
 
-  var messages = new Messages();
   messages.refresh({
     success: function(data){
       $('#messages').html('');
@@ -47,6 +39,21 @@ Messages.prototype.refresh = function(options) {
       }
     }
   });
+
+};
+
+  $(document).ready(function() {
+  var friends = {};
+  var currentRoom = 'messages';
+  var chatRooms = {'messages': true};
+  var messages = new Messages();
+  // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
+  $.ajaxPrefilter(function(settings, _, jqXHR) {
+    jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
+    jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
+  });
+
+  new NewMessageView({ messages: messages});
 
   var sendMessage = function() {
     if($("#username").val() === ''){
