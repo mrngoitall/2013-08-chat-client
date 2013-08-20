@@ -1,4 +1,7 @@
-var refreshMessages = function(options) {
+var Messages = function(){
+};
+
+Messages.prototype.refresh = function(options) {
   $.ajax('https://api.parse.com/1/classes/'+currentRoom+'?order=-createdAt', {
     contentType: 'application/json',
     cache: false,
@@ -20,7 +23,8 @@ var refreshMessages = function(options) {
     jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
   });
 
-  refreshMessages({
+  var messages = new Messages();
+  messages.refresh({
     success: function(data){
       $('#messages').html('');
       for (var i = 0; i < data.results.length; i++) {
