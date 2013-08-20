@@ -2,6 +2,25 @@ var refreshMessages = function(options) {
   $.ajax('https://api.parse.com/1/classes/'+currentRoom+'?order=-createdAt', {
     contentType: 'application/json',
     cache: false,
+    success: options.success,
+    error: function(data) {
+      console.log('Ajax request failed');
+    }
+  });
+
+};
+
+  $(document).ready(function() {
+  var friends = {};
+  var currentRoom = 'messages';
+  var chatRooms = {'messages': true};
+  // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
+  $.ajaxPrefilter(function(settings, _, jqXHR) {
+    jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
+    jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
+  });
+
+  refreshMessages({
     success: function(data){
       $('#messages').html('');
       for (var i = 0; i < data.results.length; i++) {
@@ -22,25 +41,8 @@ var refreshMessages = function(options) {
       for(var key in friends){
         $('.'+key).css({'font-weight':'bold'});
       }
-    },
-    error: function(data) {
-      console.log('Ajax request failed');
     }
   });
-
-};
-
-  $(document).ready(function() {
-  var friends = {};
-  var currentRoom = 'messages';
-  var chatRooms = {'messages': true};
-  // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
-  $.ajaxPrefilter(function(settings, _, jqXHR) {
-    jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
-    jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
-  });
-
-  refreshMessages();
 
   var sendMessage = function() {
     if($("#username").val() === ''){
