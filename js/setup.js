@@ -14,9 +14,9 @@ Messages.prototype.refresh = function(options) {
 };
 
 var NewMessageView = function(options) {
-  var messages = options.messages;
+  this.messages = options.messages;
 
-  messages.refresh({
+  this.messages.refresh({
     success: function(data){
       $('#messages').html('');
       for (var i = 0; i < data.results.length; i++) {
