@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  var friends = {};
   // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
   $.ajaxPrefilter(function(settings, _, jqXHR) {
     jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
@@ -10,15 +11,18 @@ $(document).ready(function() {
     cache: false,
     success: function(data){
       for (var i = 0; i < data.results.length; i++) {
-        $tweet = $('<p></p>');
+        var $tweet = $('<p></p>');
         $tweet.append($("<span class='user "+data.results[i].username+"'></span>").text(data.results[i].username+": "));
         $tweet.append($("<span class='message'></span>").text(data.results[i].text));
         $('#main').append($tweet);
       }
       $('.user').on('click', function(){
         var friend = '<p>' + $(this).text().slice(0,$(this).length - 3) + '</p>';
-        $('#friends').append(friend);
-
+        if(friends[friend] === undefined) {
+          $('#friends').append(friend);
+          $('.'+$(this).text().slice(0,$(this).length - 3)).css({'font-weight':'bold'});
+        }
+        friends[friend] = true;
       });
       console.log(data);
     },
@@ -40,5 +44,4 @@ $(document).ready(function() {
     });
   });
 
-//$('.undefined').css({'font-weight':'bold'})
 });
