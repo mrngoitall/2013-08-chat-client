@@ -16,7 +16,7 @@ Messages.prototype.refresh = function(options) {
 var NewMessageView = function(options) {
   this.messages = options.messages;
 
-  this.messages.refresh({
+  var refresh = $.proxy(this.messages.refresh({
     success: function(data){
       $('#messages').html('');
       for (var i = 0; i < data.results.length; i++) {
@@ -38,7 +38,8 @@ var NewMessageView = function(options) {
         $('.'+key).css({'font-weight':'bold'});
       }
     }
-  });
+  }),this);
+  refresh();
 
 };
 
