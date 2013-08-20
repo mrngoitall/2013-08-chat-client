@@ -1,3 +1,5 @@
+var events = _.clone(Backbone.Events);
+
 var Messages = function(){
 };
 
@@ -13,17 +15,36 @@ Messages.prototype.refresh = function(options) {
 
 };
 
+Messages.prototype.send = function() {
+    if($("#username").val() === ''){
+      return alert('Please enter a username!');
+    }
+    if($("#message").val() === ''){
+      return alert('Please enter a message!');
+    }
+
+    $.ajax({
+      type: 'POST',
+      contentType: 'application/json',
+      url: 'https://api.parse.com/1/classes/'+currentRoom,
+      data: '{ "text": '+JSON.stringify($("#message").val())+', \
+        "username":'+JSON.stringify($("#username").val())+' }'
+    });
+
+    new NewMessageView({ messages: messages});
+    $("#message").val('');
+  };
+
 var NewMessageView = function(options) {
   this.messages = options.messages;
-  //debugger;
   var that = this;
+  events.on('message:refresh',that.clearChatMessages,that);
+  events.on('message:refresh',that.appendNewMessages,that);
+  events.on('message:refresh',that.addFriendEventListener,that);
+  events.on('message:refresh',that.formatFriendMessages,that);
   this.messages.refresh({
     success: function(data){
-      //debugger;
-      that.clearChatMessages();
-      that.appendNewMessages(data);
-      that.addFriendEventListener();
-      that.formatFriendMessages();
+      events.trigger('message:refresh', data);
     }
   });
 
@@ -60,7 +81,7 @@ NewMessageView.prototype.formatFriendMessages = function () {
   }
 };
 
-  $(document).ready(function() {
+$(document).ready(function() {
   var friends = {};
   var currentRoom = 'messages';
   var chatRooms = {'messages': true};
@@ -73,25 +94,6 @@ NewMessageView.prototype.formatFriendMessages = function () {
 
   new NewMessageView({ messages: messages});
 
-  var sendMessage = function() {
-    if($("#username").val() === ''){
-      return alert('Please enter a username!');
-    }
-    if($("#message").val() === ''){
-      return alert('Please enter a message!');
-    }
-
-    $.ajax({
-      type: 'POST',
-      contentType: 'application/json',
-      url: 'https://api.parse.com/1/classes/'+currentRoom,
-      data: '{ "text": '+JSON.stringify($("#message").val())+', \
-        "username":'+JSON.stringify($("#username").val())+' }'
-    });
-
-    refreshMessages();
-    $("#message").val('');
-  };
 
   $('#submit').on('click', sendMessage);
   $("#message").keypress(function(event) {
@@ -118,7 +120,7 @@ NewMessageView.prototype.formatFriendMessages = function () {
       }
     }
     currentRoom = newRoomName || this.value;
-    refreshMessages();
+    new NewMessageView({ messages: messages});
   });
 
 });
