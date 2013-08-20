@@ -1,4 +1,36 @@
-$(document).ready(function() {
+var refreshMessages = function(options) {
+  $.ajax('https://api.parse.com/1/classes/'+currentRoom+'?order=-createdAt', {
+    contentType: 'application/json',
+    cache: false,
+    success: function(data){
+      $('#messages').html('');
+      for (var i = 0; i < data.results.length; i++) {
+        var $tweet = $('<p class='+data.results[i].username+'></p>');
+        $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
+        $tweet.append($("<span class='message'></span>").text(data.results[i].text));
+        $('#messages').append($tweet);
+      }
+      $('.user').on('click', function(){
+        var friendUsername = $(this).text().slice(0,$(this).length - 3);
+        var friend = '<p>' + friendUsername + '</p>';
+        if(friends[friendUsername] === undefined) {
+          $('#friends').append(friend);
+          $('.'+friendUsername).css({'font-weight':'bold'});
+        }
+        friends[friendUsername] = true;
+      });
+      for(var key in friends){
+        $('.'+key).css({'font-weight':'bold'});
+      }
+    },
+    error: function(data) {
+      console.log('Ajax request failed');
+    }
+  });
+
+};
+
+  $(document).ready(function() {
   var friends = {};
   var currentRoom = 'messages';
   var chatRooms = {'messages': true};
@@ -8,38 +40,6 @@ $(document).ready(function() {
     jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
   });
 
-  var refreshMessages = function() {
-
-    $.ajax('https://api.parse.com/1/classes/'+currentRoom+'?order=-createdAt', {
-      contentType: 'application/json',
-      cache: false,
-      success: function(data){
-        $('#messages').html('');
-        for (var i = 0; i < data.results.length; i++) {
-          var $tweet = $('<p class='+data.results[i].username+'></p>');
-          $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
-          $tweet.append($("<span class='message'></span>").text(data.results[i].text));
-          $('#messages').append($tweet);
-        }
-        $('.user').on('click', function(){
-          var friendUsername = $(this).text().slice(0,$(this).length - 3);
-          var friend = '<p>' + friendUsername + '</p>';
-          if(friends[friendUsername] === undefined) {
-            $('#friends').append(friend);
-            $('.'+friendUsername).css({'font-weight':'bold'});
-          }
-          friends[friendUsername] = true;
-        });
-        for(var key in friends){
-          $('.'+key).css({'font-weight':'bold'});
-        }
-      },
-      error: function(data) {
-        console.log('Ajax request failed');
-      }
-    });
-
-  };
   refreshMessages();
 
   var sendMessage = function() {
