@@ -3,11 +3,13 @@ var events = _.clone(Backbone.Events);
 var Messages = function(){
 };
 
-Messages.prototype.refresh = function(options) {
+Messages.prototype.refresh = function() {
   $.ajax('https://api.parse.com/1/classes/'+this.currentRoom+'?order=-createdAt', {
     contentType: 'application/json',
     cache: false,
-    success: options.success,
+    success: function(data) {
+      events.trigger('message:refresh', data);
+    },
     error: function(data) {
       console.log('Ajax request failed');
     }
@@ -37,16 +39,11 @@ Messages.prototype.send = function() {
 
 var NewMessageView = function(options) {
   this.messages = options.messages;
-  var that = this;
-  events.on('message:refresh',that.clearChatMessages,that);
-  events.on('message:refresh',that.appendNewMessages,that);
-  events.on('message:refresh',that.addFriendEventListener,that);
-  events.on('message:refresh',that.formatFriendMessages,that);
-  this.messages.refresh({
-    success: function(data){
-      events.trigger('message:refresh', data);
-    }
-  });
+  events.on('message:refresh',this.clearChatMessages,this);
+  events.on('message:refresh',this.appendNewMessages,this);
+  events.on('message:refresh',this.addFriendEventListener,this);
+  events.on('message:refresh',this.formatFriendMessages,this);
+  this.messages.refresh();
 
 };
 
