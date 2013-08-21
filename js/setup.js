@@ -39,6 +39,7 @@ Messages.prototype.send = function() {
 
 var NewMessageView = function(options) {
   this.messages = options.messages;
+  this.el = $('#messages');
   events.on('message:refresh',this.clearChatMessages,this);
   events.on('message:refresh',this.appendNewMessages,this);
   this.messages.refresh();
@@ -46,7 +47,7 @@ var NewMessageView = function(options) {
 };
 
 NewMessageView.prototype.clearChatMessages = function () {
-  $('#messages').html('');
+  this.el.html('');
 };
 
 NewMessageView.prototype.appendNewMessages = function (data) {
@@ -54,7 +55,7 @@ NewMessageView.prototype.appendNewMessages = function (data) {
     var $tweet = $('<p>').addClass(data.results[i].username);
     $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
     $tweet.append($("<span class='message'></span>").text(data.results[i].text));
-    $('#messages').append($tweet);
+    this.el.append($tweet);
   }
 };
 
