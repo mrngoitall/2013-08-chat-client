@@ -41,8 +41,6 @@ var NewMessageView = function(options) {
   this.messages = options.messages;
   events.on('message:refresh',this.clearChatMessages,this);
   events.on('message:refresh',this.appendNewMessages,this);
-  events.on('message:refresh',this.addFriendEventListener,this);
-  events.on('message:refresh',this.formatFriendMessages,this);
   this.messages.refresh();
 
 };
@@ -53,14 +51,19 @@ NewMessageView.prototype.clearChatMessages = function () {
 
 NewMessageView.prototype.appendNewMessages = function (data) {
   for (var i = 0; i < data.results.length; i++) {
-    var $tweet = $('<p class='+data.results[i].username+'></p>');
+    var $tweet = $('<p>').addClass(data.results[i].username);
     $tweet.append($("<span class='user'></span>").text(data.results[i].username+": "));
     $tweet.append($("<span class='message'></span>").text(data.results[i].text));
     $('#messages').append($tweet);
   }
 };
 
-NewMessageView.prototype.addFriendEventListener = function () {
+var FriendView = function() {
+  events.on('message:refresh',this.addFriendEventListener,this);
+  events.on('message:refresh',this.formatFriendMessages,this);
+};
+
+FriendView.prototype.addFriendEventListener = function () {
   $('.user').on('click', function(){
     var friendUsername = $(this).text().slice(0,$(this).length - 3);
     var friend = '<p>' + friendUsername + '</p>';
@@ -72,11 +75,13 @@ NewMessageView.prototype.addFriendEventListener = function () {
   });
 };
 
-NewMessageView.prototype.formatFriendMessages = function () {
+FriendView.prototype.formatFriendMessages = function () {
   for(var key in friends){
     $('.'+key).css({'font-weight':'bold'});
   }
 };
+
+
 
 $(document).ready(function() {
   var friends = {};
@@ -90,6 +95,7 @@ $(document).ready(function() {
   });
 
   new NewMessageView({ messages: messages});
+  new FriendView();
 
 
   $('#submit').on('click', sendMessage);
